@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE logback>
+<configuration>
+<!-- 
+http://qiita.com/opengl-8080/items/49719f2d35171f017aa9
+http://logback.qos.ch/manual/layouts_ja.html#ClassicPatternLayout
+http://www.slideshare.net/miyakawataku/concepts-and-tools-of-logging-in-java
+-->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>[%-5level]	%c{0}	%date{yyyy/MM/dd HH:mm:ss.SSS}	%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="nu.mine.kino.assertionutils" level="INFO" />
+  <logger name="org" level="INFO" />
+
+  <root>
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
