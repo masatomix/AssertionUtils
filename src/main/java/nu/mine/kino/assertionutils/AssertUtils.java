@@ -121,6 +121,7 @@ public class AssertUtils {
         try {
             assertEqualsFile(expected, actual);
         } catch (AssertionError e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
     }
