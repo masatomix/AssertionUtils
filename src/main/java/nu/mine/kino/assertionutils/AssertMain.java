@@ -92,8 +92,10 @@ public class AssertMain {
     }
 
     private void printArray(String format, String... array) {
-        for (String string : array) {
-            logger.info(format, string);
+        if (array != null && array.length > 0) {
+            for (String string : array) {
+                logger.info(format, string);
+            }
         }
     }
 }

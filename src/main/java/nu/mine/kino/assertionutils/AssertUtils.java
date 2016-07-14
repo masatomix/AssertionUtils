@@ -49,8 +49,13 @@ public class AssertUtils {
         Path expectedPath = Paths.get(expectedDir);
         Path actualDirPath = Paths.get(actualDir);
 
-        PathMatcher[] matchers = new PathMatcher[excludePatterns.length];
-        for (int i = 0; i < excludePatterns.length; i++) {
+        int matcherSize = 0;
+        if (excludePatterns != null) {
+            matcherSize = excludePatterns.length;
+        }
+        PathMatcher[] matchers = new PathMatcher[matcherSize];
+
+        for (int i = 0; i < matcherSize; i++) {
             matchers[i] = FileSystems.getDefault()
                     .getPathMatcher("glob:" + excludePatterns[i]);
         }
@@ -59,7 +64,7 @@ public class AssertUtils {
             @Override
             public FileVisitResult visitFile(Path actualFile,
                     BasicFileAttributes attrs) throws IOException {
-                
+
                 Path fileName = actualFile.getFileName();
                 if (fileName == null || match(matchers, fileName)) {
                     logger.info("除外しました:" + actualFile);
@@ -173,8 +178,12 @@ public class AssertUtils {
         Path sourcePath = Paths.get(sourceDir);
         Path destPath = Paths.get(destDir);
 
-        PathMatcher[] matchers = new PathMatcher[excludePatterns.length];
-        for (int i = 0; i < excludePatterns.length; i++) {
+        int matcherSize = 0;
+        if (excludePatterns != null) {
+            matcherSize = excludePatterns.length;
+        }
+        PathMatcher[] matchers = new PathMatcher[matcherSize];
+        for (int i = 0; i < matcherSize; i++) {
             matchers[i] = FileSystems.getDefault()
                     .getPathMatcher("glob:" + excludePatterns[i]);
         }
@@ -183,6 +192,7 @@ public class AssertUtils {
             @Override
             public FileVisitResult visitFile(Path sourceFile,
                     BasicFileAttributes attrs) throws IOException {
+
                 Path fileName = sourceFile.getFileName();
                 if (fileName == null || match(matchers, fileName)) {
                     return FileVisitResult.CONTINUE;
