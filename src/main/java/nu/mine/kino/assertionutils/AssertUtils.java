@@ -24,6 +24,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.junit.Assert;
+import org.junit.internal.ArrayComparisonFailure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,7 @@ public class AssertUtils {
     // http://acro-engineer.hatenablog.com/entry/2014/03/12/112402
 
     public static void assertEqualsDirWithoutException(String expectedDir,
-            String actualDir, String... excludePatterns) {
+            String actualDir, Logic logic, String... excludePatterns) {
         assertIsDir(expectedDir);
         assertIsDir(actualDir);
         Path expectedPath = Paths.get(expectedDir);
@@ -82,7 +83,8 @@ public class AssertUtils {
                 logger.debug("テスト対象ファイル: " + actualFile);
                 logger.debug("期待値ファイル: " + expectedFile);
 
-                assertEqualsFileWithoutException(expectedFile, actualFile);
+                assertEqualsFileWithoutException(expectedFile, actualFile,
+                        logic);
                 return FileVisitResult.CONTINUE;
             }
 
@@ -111,15 +113,15 @@ public class AssertUtils {
     }
 
     public static void assertEqualsFileWithoutException(String expected,
-            String actual) {
-        assertEqualsFileWithoutException(Paths.get(expected),
-                Paths.get(actual));
+            String actual, Logic logic) {
+        assertEqualsFileWithoutException(Paths.get(expected), Paths.get(actual),
+                logic);
     }
 
     public static void assertEqualsFileWithoutException(Path expected,
-            Path actual) {
+            Path actual, Logic logic) {
         try {
-            assertEqualsFile(expected, actual);
+            assertEqualsFile(expected, actual, logic);
         } catch (AssertionError e) {
             logger.error(e.getMessage());
             e.printStackTrace();
@@ -132,26 +134,15 @@ public class AssertUtils {
      *
      * @param expected
      * @param actual
+     * @param logic
      */
-    public static void assertEqualsFile(Path expected, Path actual) {
+    public static void assertEqualsFile(Path expected, Path actual,
+            Logic logic) {
         // あらかじめ配置しておいた期待値ファイルのパスを取得する
         // output1のファイルに該当する期待値ファイルのフルパスを返すメソッドをよべばよい
         assertIsFile(expected);
         assertIsFile(actual);
-
-        try {
-            byte[] expectedBytes = Files.readAllBytes(expected);
-            byte[] actualBytes = Files.readAllBytes(actual);
-            String message = actual
-                    + "について、期待値ファイルと異なっている(バイナリチェックなので詳細はファイルを参照のこと)\n期待値ファイル:"
-                    + expected;
-            // Assert.assertThat(message,actualBytes,is(expectedBytes));
-            Assert.assertArrayEquals(message, expectedBytes, actualBytes);
-            logger.info("このファイルは期待値通りでした: " + actual);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Assert.fail(e.getMessage());
-        }
+        logic.executeAssertion(expected, actual);
     }
 
     /**
@@ -160,9 +151,11 @@ public class AssertUtils {
      *
      * @param expected
      * @param actual
+     * @param logic
      */
-    public static void assertEqualsFile(String expected, String actual) {
-        assertEqualsFile(Paths.get(expected), Paths.get(actual));
+    public static void assertEqualsFile(String expected, String actual,
+            Logic logic) {
+        assertEqualsFile(Paths.get(expected), Paths.get(actual), logic);
     }
 
     /**

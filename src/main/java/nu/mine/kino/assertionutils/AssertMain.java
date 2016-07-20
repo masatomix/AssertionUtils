@@ -57,9 +57,8 @@ public class AssertMain {
     @Option(name = "-o", metaVar = "検証データディレクトリ", required = true, usage = "output file")
     private static String output;
 
-    // @Option(name = "-logic", metaVar = "logic", required = false, usage =
-    // "Logic名/ bin/txt")
-    // private static String logic;
+    @Option(name = "-logic", metaVar = "検証ロジッククラス", handler = LogicHandler.class)
+    private static Logic logic = new DefaultAssertionLogic(null);
 
     @Option(name = "-exclude", metaVar = "除外ファイル名", required = false, usage = "*.logなど除外ファイルを指定")
     private static String[] excludes;
@@ -68,9 +67,9 @@ public class AssertMain {
     // private static String xxx;
 
     public void execute() {
+        logger.info("logic = {}", logic);
         logger.info("検証データディレクトリ = {}", output);
         logger.info("期待値ディレクトリ = {}", input);
-        // logger.debug("logic = {}", logic);
         printArray("除外ファイル = {}", excludes);
 
         // Startのディレクトリの存在チェックを実施
@@ -78,9 +77,9 @@ public class AssertMain {
         assertExists(output);
 
         if (isDirectory(output)) {
-            assertEqualsDirWithoutException(input, output, excludes);
+            assertEqualsDirWithoutException(input, output, logic, excludes);
         } else {
-            assertEqualsFileWithoutException(input, output);
+            assertEqualsFileWithoutException(input, output, logic);
         }
 
         // ココに、期待値ファイルがあるのに、実績ファイルが存在しないチェックが必要だ。
