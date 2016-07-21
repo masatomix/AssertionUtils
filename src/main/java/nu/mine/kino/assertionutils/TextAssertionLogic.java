@@ -12,6 +12,9 @@
 
 package nu.mine.kino.assertionutils;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -19,7 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.junit.Assert;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.spi.Parameters;
 import org.slf4j.Logger;
@@ -34,40 +37,44 @@ public class TextAssertionLogic extends DefaultAssertionLogic {
     private static final Logger logger = LoggerFactory
             .getLogger(TextAssertionLogic.class);
 
-    private String encoding1;
+    private Charset enc1;
 
-    private String encoding2;
+    private Charset enc2;
 
     public TextAssertionLogic(Parameters params) throws AssertionError {
         super(params);
-        encoding1 = getEncoding(params, 1);
-        encoding2 = getEncoding(params, 2);
-        logger.info("期待値    encode: "+ encoding1);
-        logger.info("検証データ encode: "+ encoding2);
+        enc1 = createCharset(params, 1);
+        enc2 = createCharset(params, 2);
+        logger.info("期待値    encode: " + enc1.displayName());
+        logger.info("検証データ encode: " + enc2.displayName());
+    }
+
+    private Charset createCharset(Parameters params, int index) {
+        String encoding = getEncoding(params, index);
+        if (StringUtils.isEmpty(encoding)) {
+            return Charset.defaultCharset();
+        }
+        return Charset.forName(encoding);
     }
 
     @Override
     public void executeAssertion(Path expected, Path actual)
             throws AssertionError {
-
         try {
-            Charset enc1 = Charset.forName(encoding1);
-            Charset enc2 = Charset.forName(encoding2);
             List<String> expectedLines = Files.readAllLines(expected, enc1);
             List<String> actualLines = Files.readAllLines(actual, enc2);
-            // byte[] expectedBytes = Files.readAllBytes(expected);
-            // byte[] actualBytes = Files.readAllBytes(actual);
-            // String message = actual
-            // + "について、期待値ファイルと異なっている(バイナリチェックなので詳細はファイルを参照のこと)\n期待値ファイル:"
-            // + expected;
-            // Assert.assertArrayEquals(message, expectedBytes, actualBytes);
+
+            assertThat(actualLines.size(), is(expectedLines.size()));
+            for (int i = 0; i < actualLines.size(); i++) {
+                assertThat(actualLines.get(i), is(expectedLines.get(i)));
+            }
             logger.info("このファイルは期待値通りでした: " + actual);
         } catch (IOException e) {
-            e.printStackTrace();
-            Assert.fail(e.getMessage());
+            // e.printStackTrace();
+            fail(e.getMessage());
         } catch (UnsupportedCharsetException e) {
-            e.printStackTrace();
-            Assert.fail(e.getMessage());
+            // e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -79,7 +86,9 @@ public class TextAssertionLogic extends DefaultAssertionLogic {
      * @throws CmdLineException
      */
     private String getEncoding(Parameters params, int index) {
-        String auto = "JISAutoDetect";
+        // String auto = "JISAutoDetect";
+        String auto = null;
+
         try {
             return params.getParameter(index);
         } catch (CmdLineException e) {
