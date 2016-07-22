@@ -42,7 +42,8 @@ public class CSVAssertionLogic extends TextAssertionLogic {
                 delimiter);
         String[] actualArray = StringUtils.splitPreserveAllTokens(actual,
                 delimiter);
-        assertThat(actualArray.length, is(equalTo(expectedArray.length)));
+        assertThat("デリミタで分割後の列数比較エラー", actualArray.length,
+                is(equalTo(expectedArray.length)));
 
         // とりあえず、magicNumber 分カラムをとっちゃう
         if (actualArray.length > magicNumber) {
@@ -52,13 +53,13 @@ public class CSVAssertionLogic extends TextAssertionLogic {
             String[] convertExpectedArray = removeColumns(expectedArray,
                     magicNumber);
 
-            assertThat(convertActualArray.length,
-                    is(convertExpectedArray.length));
+            assertThat(magicNumber + " 列数分除去後の列数比較エラー",
+                    convertActualArray.length, is(convertExpectedArray.length));
 
-            String message = actual + "について、期待値ファイルと異なっている\n期待値ファイル:"
-                    + expected;
-            Assert.assertArrayEquals(message, convertExpectedArray,
-                    convertActualArray);
+            String message =  "期待値ファイルとの比較エラー: ";
+            // Assert.assertArrayEquals(message, convertExpectedArray,
+            // convertActualArray);
+            assertThat(message, convertActualArray, is(convertExpectedArray));
 
         }
     }

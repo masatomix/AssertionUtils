@@ -66,7 +66,8 @@ public class TextAssertionLogic extends DefaultAssertionLogic {
         List<String> actualLines = readText(actual, enc2);
 
         try {
-            assertThat(actualLines.size(), is(expectedLines.size()));
+            assertThat("ファイル行数の比較エラー", actualLines.size(),
+                    is(expectedLines.size()));
             for (int i = 0; i < actualLines.size(); i++) {
                 String actualLine = actualLines.get(i);
                 String expectedLine = expectedLines.get(i);
@@ -95,7 +96,8 @@ public class TextAssertionLogic extends DefaultAssertionLogic {
     }
 
     public void executeTextAssertion(String expectedLine, String actualLine) {
-        assertThat(actualLine, is(expectedLine));
+        String message = "期待値ファイルとの比較エラー: ";
+        assertThat(message, actualLine, is(expectedLine));
     }
 
     /**
