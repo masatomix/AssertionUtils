@@ -24,7 +24,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.junit.Assert;
-import org.junit.internal.ArrayComparisonFailure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +33,9 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$
  */
 public class AssertUtils {
+
+    private static final Logger slogger = LoggerFactory
+            .getLogger("forStackTrace");
 
     private static final Logger logger = LoggerFactory
             .getLogger(AssertUtils.class);
@@ -118,19 +120,29 @@ public class AssertUtils {
                 logic);
     }
 
+    /**
+     * Assertメソッドの呼び出し処理を行う起点となるメソッド。 デバッグなどでないログについてはココの処理に集約するのが望ましい
+     * 
+     * @param expected
+     * @param actual
+     * @param logic
+     */
     public static void assertEqualsFileWithoutException(Path expected,
             Path actual, Logic logic) {
         try {
             assertEqualsFile(expected, actual, logic);
+            logger.info("このファイルは期待値通りでした: " + actual);
         } catch (AssertionError e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error("このファイルの検証処理でエラーになりました: {},({})", actual,
+                    e.getMessage());
         }
     }
 
     /**
      * FullPathの文字列をもらって、そのファイルのバイナリレベルのDIFFをとる
-     * ホントはCSV変換とかしてチェックしたいけど、暫定でファイルレベルのチェックを実施。
+     * ホントはCSV変換とかしてチェックしたいけど、暫定でファイルレベルのチェックを実施。 → ロジックを注入できるよう書き換えた
+     * 
+     * 
      *
      * @param expected
      * @param actual

@@ -54,7 +54,6 @@ public class DefaultAssertionLogic implements Logic {
                     + expected;
             // Assert.assertThat(message,actualBytes,is(expectedBytes));
             Assert.assertArrayEquals(message, expectedBytes, actualBytes);
-            logger.info("このファイルは期待値通りでした: " + actual);
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail(e.getMessage());

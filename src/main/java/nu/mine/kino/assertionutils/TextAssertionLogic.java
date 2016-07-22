@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$
  */
 public class TextAssertionLogic extends DefaultAssertionLogic {
+    private static final Logger slogger = LoggerFactory
+            .getLogger("forStackTrace");
 
     private static final Logger logger = LoggerFactory
             .getLogger(TextAssertionLogic.class);
@@ -60,22 +62,40 @@ public class TextAssertionLogic extends DefaultAssertionLogic {
     @Override
     public void executeAssertion(Path expected, Path actual)
             throws AssertionError {
-        try {
-            List<String> expectedLines = Files.readAllLines(expected, enc1);
-            List<String> actualLines = Files.readAllLines(actual, enc2);
+        List<String> expectedLines = readText(expected, enc1);
+        List<String> actualLines = readText(actual, enc2);
 
+        try {
             assertThat(actualLines.size(), is(expectedLines.size()));
             for (int i = 0; i < actualLines.size(); i++) {
-                assertThat(actualLines.get(i), is(expectedLines.get(i)));
+                String actualLine = actualLines.get(i);
+                String expectedLine = expectedLines.get(i);
+                executeTextAssertion(expectedLine, actualLine);
             }
-            logger.info("このファイルは期待値通りでした: " + actual);
-        } catch (IOException e) {
-            // e.printStackTrace();
-            fail(e.getMessage());
         } catch (UnsupportedCharsetException e) {
-            // e.printStackTrace();
+            slogger.error("", e);
             fail(e.getMessage());
         }
+    }
+
+    private List<String> readText(Path path, Charset enc) {
+        List<String> lines = null;
+        try {
+            lines = Files.readAllLines(path, enc);
+        } catch (IOException e) {
+            slogger.error("このファイルの読み込みでエラー: {},({})", path, e.getMessage());
+            slogger.error("", e);
+            String message = "「java.nio.charset.MalformedInputException: Input length = xx」 \nというエラーの場合は、"
+                    + "指定した文字エンコーディングと読み込んだファイルのそれとの相違であることが多いので、"
+                    + "文字エンコーディングをチェックしましょう。";
+            slogger.error(message);
+            fail(e.getMessage());
+        }
+        return lines;
+    }
+
+    public void executeTextAssertion(String expectedLine, String actualLine) {
+        assertThat(actualLine, is(expectedLine));
     }
 
     /**
