@@ -12,6 +12,8 @@
 
 package nu.mine.kino.assertionutils;
 
+import static org.hamcrest.CoreMatchers.*;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,11 +51,22 @@ public class DefaultAssertionLogic implements Logic {
         try {
             byte[] expectedBytes = Files.readAllBytes(expected);
             byte[] actualBytes = Files.readAllBytes(actual);
-            String message = actual
-                    + "について、期待値ファイルと異なっている(バイナリチェックなので詳細はファイルを参照のこと)\n期待値ファイル:"
-                    + expected;
-            // Assert.assertThat(message,actualBytes,is(expectedBytes));
-            Assert.assertArrayEquals(message, expectedBytes, actualBytes);
+
+            Assert.assertThat("期待値ファイルとのサイズ比較エラー", actualBytes.length,
+                    is(actualBytes.length));
+
+            // String message = actual
+            // + "について、期待値ファイルと異なっている(バイナリチェックなので詳細はファイルを参照のこと)\n期待値ファイル:"
+            // + expected;
+            String message = "期待値ファイルとの比較エラー(バイナリチェックなので詳細はファイルを参照のこと)";
+
+            for (int i = 0; i < actualBytes.length; i++) {
+                Assert.assertThat(message, actualBytes[i],
+                        is(equalTo(expectedBytes[i])));
+            }
+            // Assert.assertThat(message, actualBytes,
+            // is(equalTo(expectedBytes)));
+            // Assert.assertArrayEquals(message, expectedBytes, actualBytes);
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail(e.getMessage());

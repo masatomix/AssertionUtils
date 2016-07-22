@@ -13,7 +13,7 @@ http://www.slideshare.net/miyakawataku/concepts-and-tools-of-logging-in-java
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>logback-sample.log</file>
+    <file>error.log</file>
     <encoder>
       <charset>UTF-8</charset>
       <pattern>[%-5level]	%date{yyyy/MM/dd HH:mm:ss.SSS}	%msg%n</pattern>
