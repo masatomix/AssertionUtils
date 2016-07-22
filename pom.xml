@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>nu.mine.kino</groupId>
 	<artifactId>AssertionUtils</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 
 	<properties>
@@ -55,7 +55,8 @@
 			<artifactId>slf4j-simple</artifactId>
 			<version>1.7.18</version>
 		</dependency>
-
+<!-- 使用している?いなければいつか削除
+http://d.hatena.ne.jp/Kazuhira/20150408/1428503151
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
@@ -72,7 +73,7 @@
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.19.0-GA</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>args4j</groupId>
 			<artifactId>args4j</artifactId>
@@ -106,7 +107,6 @@
 				</configuration>
 			</plugin>
 
-
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.5.3</version>
@@ -116,7 +116,8 @@
 							<mainClass>nu.mine.kino.assertionutils.AssertMain</mainClass>
 						</manifest>
  						<manifestEntries>
-						<Class-Path>.</Class-Path><!-- これでlogback.xmlをjarとおなじディレクトリに置いておけば、参照してくれる。 -->
+						<Class-Path>.</Class-Path>
+						<!-- これ↑でlogback.xmlをjarとおなじディレクトリに置いておけば、参照してくれる。 -->
 						</manifestEntries>
 					</archive>
 					<descriptorRefs>

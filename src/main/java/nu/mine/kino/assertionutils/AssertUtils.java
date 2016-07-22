@@ -34,6 +34,9 @@ import org.slf4j.LoggerFactory;
  */
 public class AssertUtils {
 
+    private static final Logger slogger = LoggerFactory
+            .getLogger("forStackTrace");
+
     private static final Logger logger = LoggerFactory
             .getLogger(AssertUtils.class);
 
@@ -43,7 +46,7 @@ public class AssertUtils {
     // http://acro-engineer.hatenablog.com/entry/2014/03/12/112402
 
     public static void assertEqualsDirWithoutException(String expectedDir,
-            String actualDir, String... excludePatterns) {
+            String actualDir, Logic logic, String... excludePatterns) {
         assertIsDir(expectedDir);
         assertIsDir(actualDir);
         Path expectedPath = Paths.get(expectedDir);
@@ -82,7 +85,8 @@ public class AssertUtils {
                 logger.debug("テスト対象ファイル: " + actualFile);
                 logger.debug("期待値ファイル: " + expectedFile);
 
-                assertEqualsFileWithoutException(expectedFile, actualFile);
+                assertEqualsFileWithoutException(expectedFile, actualFile,
+                        logic);
                 return FileVisitResult.CONTINUE;
             }
 
@@ -111,46 +115,46 @@ public class AssertUtils {
     }
 
     public static void assertEqualsFileWithoutException(String expected,
-            String actual) {
-        assertEqualsFileWithoutException(Paths.get(expected),
-                Paths.get(actual));
+            String actual, Logic logic) {
+        assertEqualsFileWithoutException(Paths.get(expected), Paths.get(actual),
+                logic);
     }
 
+    /**
+     * Assertメソッドの呼び出し処理を行う起点となるメソッド。 デバッグなどでないログについてはココの処理に集約するのが望ましい
+     * 
+     * @param expected
+     * @param actual
+     * @param logic
+     */
     public static void assertEqualsFileWithoutException(Path expected,
-            Path actual) {
+            Path actual, Logic logic) {
         try {
-            assertEqualsFile(expected, actual);
+            assertEqualsFile(expected, actual, logic);
+            logger.info("このファイルは期待値通りでした: " + actual);
         } catch (AssertionError e) {
-            e.printStackTrace();
+            logger.error("このファイルの検証処理でエラーになりました: {},({})", actual,
+                    e.getMessage());
         }
     }
 
     /**
      * FullPathの文字列をもらって、そのファイルのバイナリレベルのDIFFをとる
-     * ホントはCSV変換とかしてチェックしたいけど、暫定でファイルレベルのチェックを実施。
+     * ホントはCSV変換とかしてチェックしたいけど、暫定でファイルレベルのチェックを実施。 → ロジックを注入できるよう書き換えた
+     * 
+     * 
      *
      * @param expected
      * @param actual
+     * @param logic
      */
-    public static void assertEqualsFile(Path expected, Path actual) {
+    public static void assertEqualsFile(Path expected, Path actual,
+            Logic logic) {
         // あらかじめ配置しておいた期待値ファイルのパスを取得する
         // output1のファイルに該当する期待値ファイルのフルパスを返すメソッドをよべばよい
         assertIsFile(expected);
         assertIsFile(actual);
-
-        try {
-            byte[] expectedBytes = Files.readAllBytes(expected);
-            byte[] actualBytes = Files.readAllBytes(actual);
-            String message = actual
-                    + "について、期待値ファイルと異なっている(バイナリチェックなので詳細はファイルを参照のこと)\n期待値ファイル:"
-                    + expected;
-            // Assert.assertThat(message,actualBytes,is(expectedBytes));
-            Assert.assertArrayEquals(message, expectedBytes, actualBytes);
-            logger.info("このファイルは期待値通りでした: " + actual);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Assert.fail(e.getMessage());
-        }
+        logic.executeAssertion(expected, actual);
     }
 
     /**
@@ -159,9 +163,11 @@ public class AssertUtils {
      *
      * @param expected
      * @param actual
+     * @param logic
      */
-    public static void assertEqualsFile(String expected, String actual) {
-        assertEqualsFile(Paths.get(expected), Paths.get(actual));
+    public static void assertEqualsFile(String expected, String actual,
+            Logic logic) {
+        assertEqualsFile(Paths.get(expected), Paths.get(actual), logic);
     }
 
     /**

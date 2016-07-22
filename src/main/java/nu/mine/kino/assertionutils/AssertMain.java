@@ -43,9 +43,24 @@ public class AssertMain {
             System.out.println();
             System.out.println("除外ファイル名は -exclude xx を繰り返し指定することで複数ファイルを指定可能");
             System.out.println(
-                    "例: java -jar AssertionUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -exclude .bashrc -exclude .bash_history");
-            // System.out.println();
-            // parser.printUsage(System.out);
+                    "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -exclude .bashrc -exclude .bash_history");
+
+            System.out.println();
+            System.out.println("テキスト比較する場合(期待値・検証値ファイルともMS932で読み込む)");
+            System.out.println(
+                    "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932");
+
+            System.out.println();
+            System.out.println("CSV比較する場合(暫定処理として、半角スペースをデリミタとして分割して、先頭2列は除去してCSV項目比較)");
+            System.out.println(
+                    "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.CSVAssertionLogic MS932");
+                    // System.out.println();
+                    // parser.printUsage(System.out);
+
+            // -i
+            // /Users/masatomix/Documents/workspace_new/etfsmaBatchJava2/expected
+            // -o /Users/masatomix/Desktop/actual -exclude d018.txt
+            // -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932
             return;
         }
         main.execute();
@@ -57,9 +72,8 @@ public class AssertMain {
     @Option(name = "-o", metaVar = "検証データディレクトリ", required = true, usage = "output file")
     private static String output;
 
-    // @Option(name = "-logic", metaVar = "logic", required = false, usage =
-    // "Logic名/ bin/txt")
-    // private static String logic;
+    @Option(name = "-logic", metaVar = "検証ロジッククラス", handler = LogicHandler.class)
+    private static Logic logic = new DefaultAssertionLogic(null);
 
     @Option(name = "-exclude", metaVar = "除外ファイル名", required = false, usage = "*.logなど除外ファイルを指定")
     private static String[] excludes;
@@ -68,19 +82,20 @@ public class AssertMain {
     // private static String xxx;
 
     public void execute() {
+        logger.info("logic = {}", logic);
         logger.info("検証データディレクトリ = {}", output);
         logger.info("期待値ディレクトリ = {}", input);
-        // logger.debug("logic = {}", logic);
         printArray("除外ファイル = {}", excludes);
+        logger.info("------ 検証開始 ------");
 
         // Startのディレクトリの存在チェックを実施
         assertExists(input);
         assertExists(output);
 
         if (isDirectory(output)) {
-            assertEqualsDirWithoutException(input, output, excludes);
+            assertEqualsDirWithoutException(input, output, logic, excludes);
         } else {
-            assertEqualsFileWithoutException(input, output);
+            assertEqualsFileWithoutException(input, output, logic);
         }
 
         // ココに、期待値ファイルがあるのに、実績ファイルが存在しないチェックが必要だ。
@@ -88,6 +103,7 @@ public class AssertMain {
         // ExpectedをVisitorして、そんざいしないActualを警告出すか。
         // → 実装済み
         assertFileExists(input, output, excludes);
+        logger.info("------ 検証終了 ------");
 
     }
 
