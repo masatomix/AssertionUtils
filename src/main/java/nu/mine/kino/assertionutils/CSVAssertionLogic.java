@@ -16,14 +16,17 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.kohsuke.args4j.spi.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 基本的には{@link TextAssertionLogic}と同様の比較を行うが、行をスペースをデリミタとした可変長ファイルと見なし、
+ * さらにmagicNumber (=2) 列だけ除去してテキスト比較するサンプル。日付などが先頭列に入っていて、そこは比較除外としたいなどを想定し、サンプルを作成している。
+ * 
  * @author Masatomi KINO
  * @version $Revision$
+ * @see TextAssertionLogic
  */
 public class CSVAssertionLogic extends TextAssertionLogic {
 
@@ -56,7 +59,7 @@ public class CSVAssertionLogic extends TextAssertionLogic {
             assertThat(magicNumber + " 列数分除去後の列数比較エラー",
                     convertActualArray.length, is(convertExpectedArray.length));
 
-            String message =  "期待値ファイルとの比較エラー: ";
+            String message = "期待値ファイルとの比較エラー: ";
             // Assert.assertArrayEquals(message, convertExpectedArray,
             // convertActualArray);
             assertThat(message, convertActualArray, is(convertExpectedArray));
