@@ -46,22 +46,15 @@ public class AssertUtils {
     // http://acro-engineer.hatenablog.com/entry/2014/03/12/112402
 
     public static void assertEqualsDirWithoutException(String expectedDir,
-            String actualDir, Logic logic, String... excludePatterns) {
+            String actualDir, Logic logic, String[] includePatterns,
+            String[] excludePatterns) {
         assertIsDir(expectedDir);
         assertIsDir(actualDir);
         Path expectedPath = Paths.get(expectedDir);
         Path actualDirPath = Paths.get(actualDir);
 
-        int matcherSize = 0;
-        if (excludePatterns != null) {
-            matcherSize = excludePatterns.length;
-        }
-        PathMatcher[] matchers = new PathMatcher[matcherSize];
-
-        for (int i = 0; i < matcherSize; i++) {
-            matchers[i] = FileSystems.getDefault()
-                    .getPathMatcher("glob:" + excludePatterns[i]);
-        }
+        PathMatcher[] includeMatchers = createPathMatcher(includePatterns);
+        PathMatcher[] matchers = createPathMatcher(excludePatterns);
 
         FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
             @Override
@@ -69,7 +62,7 @@ public class AssertUtils {
                     BasicFileAttributes attrs) throws IOException {
 
                 Path fileName = actualFile.getFileName();
-                if (fileName == null || match(matchers, fileName)) {
+                if (fileName == null) {
                     logger.info("除外しました:" + actualFile);
                     return FileVisitResult.CONTINUE;
                 }
@@ -78,6 +71,21 @@ public class AssertUtils {
                 if (actualFile.toFile().getName().startsWith(".")) {
                     return FileVisitResult.CONTINUE;
                 }
+
+                // includeなMatcherにあたらなければ、除外
+                if (includeMatchers.length != 0) {
+                    if (!match(includeMatchers, fileName)) {
+                        logger.info("除外しました:" + actualFile);
+                        return FileVisitResult.CONTINUE;
+                    }
+                }
+
+                // excludeなMatcherにあたったら除外。
+                if (match(matchers, fileName)) {
+                    logger.info("除外しました:" + actualFile);
+                    return FileVisitResult.CONTINUE;
+                }
+
                 // Visitorパタンで、走査したファイルから、期待値パスを算出し、それらをDIFFとる。
                 // System.out.println("actualFile: " + actualFile);
                 Path relativePath = actualDirPath.relativize(actualFile);
@@ -112,6 +120,20 @@ public class AssertUtils {
             Assert.fail(e.getMessage());
         }
 
+    }
+
+    private static PathMatcher[] createPathMatcher(String[] patterns) {
+        if (patterns == null) {
+            return new PathMatcher[0];
+        }
+        int matcherSize = patterns.length;
+        PathMatcher[] matchers = new PathMatcher[matcherSize];
+
+        for (int i = 0; i < matcherSize; i++) {
+            matchers[i] = FileSystems.getDefault()
+                    .getPathMatcher("glob:" + patterns[i]);
+        }
+        return matchers;
     }
 
     public static void assertEqualsFileWithoutException(String expected,
@@ -184,15 +206,7 @@ public class AssertUtils {
         Path sourcePath = Paths.get(sourceDir);
         Path destPath = Paths.get(destDir);
 
-        int matcherSize = 0;
-        if (excludePatterns != null) {
-            matcherSize = excludePatterns.length;
-        }
-        PathMatcher[] matchers = new PathMatcher[matcherSize];
-        for (int i = 0; i < matcherSize; i++) {
-            matchers[i] = FileSystems.getDefault()
-                    .getPathMatcher("glob:" + excludePatterns[i]);
-        }
+        PathMatcher[] matchers = createPathMatcher(excludePatterns);
 
         FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
             @Override
