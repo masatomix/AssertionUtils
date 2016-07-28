@@ -51,7 +51,8 @@ public class AssertMain {
                     "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932");
 
             System.out.println();
-            System.out.println("CSV比較する場合(暫定処理として、半角スペースをデリミタとして分割して、先頭2列は除去してCSV項目比較)");
+            System.out.println(
+                    "CSV比較する場合(暫定処理として、半角スペースをデリミタとして分割して、先頭2列は除去してCSV項目比較)");
             System.out.println(
                     "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.CSVAssertionLogic MS932");
                     // System.out.println();

@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
  * デフォルトの、バイナリ比較処理。-logicでオプション指定しなければ、コレが呼び出される。
  * 内部でJUnitのバイト列のAssertion処理をコールしている
  * 
+ * 指定されたファイルをバイト列で読み込み、ファイルサイズの比較を行った後、中身をバイナリレベルで比較する。
+ * 
  * @author Masatomi KINO
  * @version $Revision$
  */
@@ -53,7 +55,7 @@ public class DefaultAssertionLogic implements Logic {
             byte[] actualBytes = Files.readAllBytes(actual);
 
             Assert.assertThat("期待値ファイルとのサイズ比較エラー", actualBytes.length,
-                    is(actualBytes.length));
+                    is(expectedBytes.length));
 
             // String message = actual
             // + "について、期待値ファイルと異なっている(バイナリチェックなので詳細はファイルを参照のこと)\n期待値ファイル:"
