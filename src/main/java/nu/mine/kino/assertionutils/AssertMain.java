@@ -33,38 +33,53 @@ public class AssertMain {
         // LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         // StatusPrinter.print(lc);
 
+        // try (ConfigurableApplicationContext context = new
+        // ClassPathXmlApplicationContext(
+        // "applicationContext.xml")) {
         AssertMain main = new AssertMain();
+        // AssertMain main = context.getBean(AssertMain.class);
         CmdLineParser parser = new CmdLineParser(main);
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
-            System.out.println("usage:");
-            parser.printSingleLineUsage(System.out);
-            System.out.println();
-            System.out.println("除外ファイル名は -exclude xx を繰り返し指定することで複数ファイルを指定可能");
-            System.out.println(
-                    "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -exclude .bashrc -exclude .bash_history");
-
-            System.out.println();
-            System.out.println("テキスト比較する場合(期待値・検証値ファイルともMS932で読み込む)");
-            System.out.println(
-                    "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932");
-
-            System.out.println();
-            System.out.println(
-                    "CSV比較する場合(暫定処理として、半角スペースをデリミタとして分割して、先頭2列は除去してCSV項目比較)");
-            System.out.println(
-                    "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.CSVAssertionLogic MS932");
-                    // System.out.println();
-                    // parser.printUsage(System.out);
-
-            // -i
-            // /Users/masatomix/Documents/workspace_new/etfsmaBatchJava2/expected
-            // -o /Users/masatomix/Desktop/actual -exclude d018.txt
-            // -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932
+            printUsage(parser);
             return;
         }
         main.execute();
+        // }
+    }
+
+    private static void printUsage(CmdLineParser parser) {
+        System.out.println("usage:");
+        parser.printSingleLineUsage(System.out);
+        System.out.println();
+        System.out.println("対象ファイル名は -include xx を繰り返し指定することで複数ファイルを指定可能");
+        System.out.println("除外ファイル名は -exclude xx を繰り返し指定することで複数ファイルを指定可能");
+        System.out.println("-includeと-excludeを両方指定した場合は、はじめに -include でマッチするものだけを抽出し、つぎに -exclude にマッチするものを除外します。");
+        System.out.println("Windowsなどの場合は、-include \"*.log\" などと囲むようにしてください。");
+        System.out.println();
+        System.out.println(
+                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -exclude .bashrc -exclude .bash_history");
+
+        System.out.println();
+        System.out.println("テキスト比較する場合(期待値・検証値ファイルともMS932で読み込む)");
+        System.out.println(
+                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932");
+
+        System.out.println("　※ -logic を記載する場合は、最後に書くようにしてください。");
+        System.out.println();
+        System.out.println(
+                "CSV比較する場合(暫定処理として、半角スペースをデリミタとして分割して、先頭2列は除去してCSV項目比較)");
+        System.out.println(
+                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.CSVAssertionLogic MS932");
+        System.out.println("　※ -logic を記載する場合は、最後に書くようにしてください。");
+        // System.out.println();
+        // parser.printUsage(System.out);
+
+        // -i
+        // /Users/masatomix/Documents/workspace_new/etfsmaBatchJava2/expected
+        // -o /Users/masatomix/Desktop/actual -exclude d018.txt
+        // -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932
     }
 
     @Option(name = "-i", metaVar = "期待値ディレクトリ", required = true, usage = "input file")
@@ -79,6 +94,9 @@ public class AssertMain {
     @Option(name = "-exclude", metaVar = "除外ファイル名", required = false, usage = "*.logなど除外ファイルを指定")
     private static String[] excludes;
 
+    @Option(name = "-include", metaVar = "対象ファイル名", required = false)
+    private static String[] includes;
+
     // @Option(name = "-xxxx", required = true)
     // private static String xxx;
 
@@ -86,6 +104,7 @@ public class AssertMain {
         logger.info("logic = {}", logic);
         logger.info("検証データディレクトリ = {}", output);
         logger.info("期待値ディレクトリ = {}", input);
+        printArray("対象ファイル = {}", includes);
         printArray("除外ファイル = {}", excludes);
         logger.info("------ 検証開始 ------");
 
@@ -94,7 +113,8 @@ public class AssertMain {
         assertExists(output);
 
         if (isDirectory(output)) {
-            assertEqualsDirWithoutException(input, output, logic, excludes);
+            assertEqualsDirWithoutException(input, output, logic, includes,
+                    excludes);
         } else {
             assertEqualsFileWithoutException(input, output, logic);
         }
