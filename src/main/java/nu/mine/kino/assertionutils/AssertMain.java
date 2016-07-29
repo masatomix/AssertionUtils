@@ -55,21 +55,26 @@ public class AssertMain {
         System.out.println();
         System.out.println("対象ファイル名は -include xx を繰り返し指定することで複数ファイルを指定可能");
         System.out.println("除外ファイル名は -exclude xx を繰り返し指定することで複数ファイルを指定可能");
+        System.out.println("-includeと-excludeを両方指定した場合は、はじめに -include でマッチするものだけを抽出し、つぎに -exclude にマッチするものを除外します。");
+        System.out.println("Windowsなどの場合は、-include \"*.log\" などと囲むようにしてください。");
+        System.out.println();
         System.out.println(
-                "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -exclude .bashrc -exclude .bash_history");
+                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -exclude .bashrc -exclude .bash_history");
 
         System.out.println();
         System.out.println("テキスト比較する場合(期待値・検証値ファイルともMS932で読み込む)");
         System.out.println(
-                "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932");
+                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932");
 
+        System.out.println("　※ -logic を記載する場合は、最後に書くようにしてください。");
         System.out.println();
         System.out.println(
                 "CSV比較する場合(暫定処理として、半角スペースをデリミタとして分割して、先頭2列は除去してCSV項目比較)");
         System.out.println(
-                "例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.CSVAssertionLogic MS932");
-                // System.out.println();
-                // parser.printUsage(System.out);
+                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.CSVAssertionLogic MS932");
+        System.out.println("　※ -logic を記載する場合は、最後に書くようにしてください。");
+        // System.out.println();
+        // parser.printUsage(System.out);
 
         // -i
         // /Users/masatomix/Documents/workspace_new/etfsmaBatchJava2/expected
@@ -92,8 +97,8 @@ public class AssertMain {
     @Option(name = "-include", metaVar = "対象ファイル名", required = false)
     private static String[] includes;
 
-//     @Option(name = "-xxxx", required = true)
-//     private static String xxx;
+    // @Option(name = "-xxxx", required = true)
+    // private static String xxx;
 
     public void execute() {
         logger.info("logic = {}", logic);

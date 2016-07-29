@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>nu.mine.kino</groupId>
 	<artifactId>AssertionUtils</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 
 
 	<properties>
@@ -13,7 +13,13 @@
 		<lombok.version>1.16.2</lombok.version>
 	</properties>
 	<dependencies>
-
+<!-- 
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
