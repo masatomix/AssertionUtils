@@ -27,18 +27,18 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  *
  * @author Masatomi KINO
  * @version $Revision$
  */
+@Slf4j
 public class AssertUtils {
 
     private static final Logger slogger = LoggerFactory
             .getLogger("forStackTrace");
-
-    private static final Logger logger = LoggerFactory
-            .getLogger(AssertUtils.class);
 
     // List<String> allLines = Files.readAllLines(path,
     // Charset.forName("UTF-8"));
@@ -46,15 +46,15 @@ public class AssertUtils {
     // http://acro-engineer.hatenablog.com/entry/2014/03/12/112402
 
     public static void assertEqualsDirWithoutException(String expectedDir,
-            String actualDir, Logic logic, String[] includePatterns,
+            String actualDir, final Logic logic, String[] includePatterns,
             String[] excludePatterns) {
         assertIsDir(expectedDir);
         assertIsDir(actualDir);
-        Path expectedPath = Paths.get(expectedDir);
-        Path actualDirPath = Paths.get(actualDir);
+        final Path expectedPath = Paths.get(expectedDir);
+        final Path actualDirPath = Paths.get(actualDir);
 
-        PathMatcher[] includeMatchers = createPathMatcher(includePatterns);
-        PathMatcher[] matchers = createPathMatcher(excludePatterns);
+        final PathMatcher[] includeMatchers = createPathMatcher(includePatterns);
+        final PathMatcher[] matchers = createPathMatcher(excludePatterns);
 
         FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
             @Override
@@ -63,7 +63,7 @@ public class AssertUtils {
 
                 Path fileName = actualFile.getFileName();
                 if (fileName == null) {
-                    logger.info("除外しました:" + actualFile);
+                    log.info("除外しました:" + actualFile);
                     return FileVisitResult.CONTINUE;
                 }
 
@@ -72,17 +72,22 @@ public class AssertUtils {
                     return FileVisitResult.CONTINUE;
                 }
 
+                // '_modifiedでおわるファイルは除外'
+                if (actualFile.toFile().getName().endsWith("_modified")) {
+                    return FileVisitResult.CONTINUE;
+                }
+
                 // includeなMatcherにあたらなければ、除外
                 if (includeMatchers.length != 0) {
                     if (!match(includeMatchers, fileName)) {
-                        logger.info("除外しました:" + actualFile);
+                        log.info("除外しました:" + actualFile);
                         return FileVisitResult.CONTINUE;
                     }
                 }
 
                 // excludeなMatcherにあたったら除外。
                 if (match(matchers, fileName)) {
-                    logger.info("除外しました:" + actualFile);
+                    log.info("除外しました:" + actualFile);
                     return FileVisitResult.CONTINUE;
                 }
 
@@ -90,8 +95,8 @@ public class AssertUtils {
                 // System.out.println("actualFile: " + actualFile);
                 Path relativePath = actualDirPath.relativize(actualFile);
                 Path expectedFile = expectedPath.resolve(relativePath);
-                logger.debug("テスト対象ファイル: " + actualFile);
-                logger.debug("期待値ファイル: " + expectedFile);
+                log.debug("テスト対象ファイル: " + actualFile);
+                log.debug("期待値ファイル: " + expectedFile);
 
                 assertEqualsFileWithoutException(expectedFile, actualFile,
                         logic);
@@ -153,10 +158,9 @@ public class AssertUtils {
             Path actual, Logic logic) {
         try {
             assertEqualsFile(expected, actual, logic);
-            logger.info("このファイルは期待値通りでした: " + actual);
+            log.info("このファイルは期待値通りでした: " + actual);
         } catch (AssertionError e) {
-            logger.error("このファイルの検証処理でエラーになりました: {},({})", actual,
-                    e.getMessage());
+            log.error("このファイルの検証処理でエラーになりました: {},({})", actual, e.getMessage());
         }
     }
 
@@ -203,10 +207,10 @@ public class AssertUtils {
             String... excludePatterns) {
         assertIsDir(sourceDir);
         assertIsDir(destDir);
-        Path sourcePath = Paths.get(sourceDir);
-        Path destPath = Paths.get(destDir);
+        final Path sourcePath = Paths.get(sourceDir);
+        final Path destPath = Paths.get(destDir);
 
-        PathMatcher[] matchers = createPathMatcher(excludePatterns);
+        final PathMatcher[] matchers = createPathMatcher(excludePatterns);
 
         FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
             @Override
@@ -228,8 +232,7 @@ public class AssertUtils {
                 Path relativePath = sourcePath.relativize(sourceFile);
                 Path destFile = destPath.resolve(relativePath);
                 if (!Files.exists(destFile)) {
-                    logger.error(
-                            "期待値ファイルが置いてあるのに、テスト対象ファイルが存在しない: " + destFile);
+                    log.error("期待値ファイルが置いてあるのに、テスト対象ファイルが存在しない: " + destFile);
                 }
                 return FileVisitResult.CONTINUE;
             }

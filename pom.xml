@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>nu.mine.kino</groupId>
 	<artifactId>AssertionUtils</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>0.0.5-SNAPSHOT</version>
 
 
 	<properties>
@@ -93,6 +93,7 @@ http://d.hatena.ne.jp/Kazuhira/20150408/1428503151
 				<directory>src/main/resources</directory>
 				<excludes>
 				<exclude>logback.xml</exclude>
+				<exclude>excludeColumns.properties</exclude>
 				</excludes>
 			</resource>
 		</resources>
@@ -106,9 +107,9 @@ http://d.hatena.ne.jp/Kazuhira/20150408/1428503151
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+				<configuration><!--  要対応 -->
+					<source>1.7</source>
+					<target>1.7</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>

@@ -20,18 +20,19 @@ import org.kohsuke.args4j.spi.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 基本的には{@link TextAssertionLogic}と同様の比較を行うが、行をスペースをデリミタとした可変長ファイルと見なし、
- * さらにmagicNumber (=2) 列だけ除去してテキスト比較するサンプル。日付などが先頭列に入っていて、そこは比較除外としたいなどを想定し、サンプルを作成している。
+ * さらにmagicNumber (=2)
+ * 列だけ除去してテキスト比較するサンプル。日付などが先頭列に入っていて、そこは比較除外としたいなどを想定し、サンプルを作成している。
  * 
  * @author Masatomi KINO
  * @version $Revision$
  * @see TextAssertionLogic
  */
+@Slf4j
 public class CSVAssertionLogic extends TextAssertionLogic {
-
-    private static final Logger logger = LoggerFactory
-            .getLogger(CSVAssertionLogic.class);
 
     public CSVAssertionLogic(Parameters params) throws AssertionError {
         super(params);
