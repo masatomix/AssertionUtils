@@ -17,18 +17,18 @@ import static nu.mine.kino.assertionutils.AssertUtils.*;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Masatomi KINO
  * @version $Revision$
  */
+@Slf4j
 public class AssertMain {
-    private static final Logger logger = LoggerFactory
-            .getLogger(AssertMain.class);
 
     public static void main(String[] args) {
+
         // print internal state
         // LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         // StatusPrinter.print(lc);
@@ -55,7 +55,8 @@ public class AssertMain {
         System.out.println();
         System.out.println("対象ファイル名は -include xx を繰り返し指定することで複数ファイルを指定可能");
         System.out.println("除外ファイル名は -exclude xx を繰り返し指定することで複数ファイルを指定可能");
-        System.out.println("-includeと-excludeを両方指定した場合は、はじめに -include でマッチするものだけを抽出し、つぎに -exclude にマッチするものを除外します。");
+        System.out.println(
+                "-includeと-excludeを両方指定した場合は、はじめに -include でマッチするものだけを抽出し、つぎに -exclude にマッチするものを除外します。");
         System.out.println("Windowsなどの場合は、-include \"*.log\" などと囲むようにしてください。");
         System.out.println();
         System.out.println(
@@ -101,12 +102,12 @@ public class AssertMain {
     // private static String xxx;
 
     public void execute() {
-        logger.info("logic = {}", logic);
-        logger.info("検証データディレクトリ = {}", output);
-        logger.info("期待値ディレクトリ = {}", input);
+        log.info("logic = {}", logic);
+        log.info("検証データディレクトリ = {}", output);
+        log.info("期待値ディレクトリ = {}", input);
         printArray("対象ファイル = {}", includes);
         printArray("除外ファイル = {}", excludes);
-        logger.info("------ 検証開始 ------");
+        log.info("------ 検証開始 ------");
 
         // Startのディレクトリの存在チェックを実施
         assertExists(input);
@@ -124,14 +125,14 @@ public class AssertMain {
         // ExpectedをVisitorして、そんざいしないActualを警告出すか。
         // → 実装済み
         assertFileExists(input, output, excludes);
-        logger.info("------ 検証終了 ------");
+        log.info("------ 検証終了 ------");
 
     }
 
     private void printArray(String format, String... array) {
         if (array != null && array.length > 0) {
             for (String string : array) {
-                logger.info(format, string);
+                log.info(format, string);
             }
         }
     }

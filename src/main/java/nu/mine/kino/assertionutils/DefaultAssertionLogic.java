@@ -19,10 +19,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.Assert;
-import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.spi.Parameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * デフォルトの、バイナリ比較処理。-logicでオプション指定しなければ、コレが呼び出される。
@@ -33,9 +32,8 @@ import org.slf4j.LoggerFactory;
  * @author Masatomi KINO
  * @version $Revision$
  */
+@Slf4j
 public class DefaultAssertionLogic implements Logic {
-    private static final Logger logger = LoggerFactory
-            .getLogger(DefaultAssertionLogic.class);
 
     // private Parameters params;
 

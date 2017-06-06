@@ -25,14 +25,17 @@ import org.kohsuke.args4j.spi.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Masatomi KINO
  * @version $Revision$
  */
+@Slf4j
 public class LogicHandler extends OptionHandler<Logic> {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(LogicHandler.class);
+    private static final Logger slogger = LoggerFactory
+            .getLogger("forStackTrace");
 
     public LogicHandler(CmdLineParser parser, OptionDef option,
             Setter<? super Logic> setter) {
@@ -48,7 +51,7 @@ public class LogicHandler extends OptionHandler<Logic> {
 
     private Logic parse(Parameters params) throws CmdLineException {
         String className = params.getParameter(0);
-        logger.debug("className: " + className);
+        log.debug("className: " + className);
         print(params);
 
         try {
@@ -70,25 +73,25 @@ public class LogicHandler extends OptionHandler<Logic> {
             // return newInstance;
             // }
         } catch (ClassNotFoundException e) {
-            logger.error(exception2String(e));
+            slogger.error(exception2String(e));
             throw new CmdLineException(owner, e);
         } catch (InstantiationException e) {
-            logger.error(exception2String(e));
+            slogger.error(exception2String(e));
             throw new CmdLineException(owner, e);
         } catch (IllegalAccessException e) {
-            logger.error(exception2String(e));
+            slogger.error(exception2String(e));
             throw new CmdLineException(owner, e);
         } catch (IllegalArgumentException e) {
-            logger.error(exception2String(e));
+            slogger.error(exception2String(e));
             throw new CmdLineException(owner, e);
         } catch (InvocationTargetException e) {
-            logger.error(exception2String(e));
+            slogger.error(exception2String(e));
             throw new CmdLineException(owner, e);
         } catch (NoSuchMethodException e) {
-            logger.error(exception2String(e));
+            slogger.error(exception2String(e));
             throw new CmdLineException(owner, e);
         } catch (SecurityException e) {
-            logger.error(exception2String(e));
+            slogger.error(exception2String(e));
             throw new CmdLineException(owner, e);
         }
 
@@ -96,7 +99,7 @@ public class LogicHandler extends OptionHandler<Logic> {
 
     private void print(Parameters params) throws CmdLineException {
         for (int i = 0; i < params.size(); i++) {
-            logger.debug("params[{}]: " + params.getParameter(i), i);
+            log.debug("params[{}]: " + params.getParameter(i), i);
         }
     }
 

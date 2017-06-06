@@ -28,6 +28,10 @@ import org.kohsuke.args4j.spi.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 指定されたファイルをテキストファイルとして、比較する。
  * 
@@ -41,23 +45,23 @@ import org.slf4j.LoggerFactory;
  * @author Masatomi KINO
  * @version $Revision$
  */
+@Slf4j
 public class TextAssertionLogic extends DefaultAssertionLogic {
     private static final Logger slogger = LoggerFactory
             .getLogger("forStackTrace");
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(TextAssertionLogic.class);
-
+    @Getter
     private Charset enc1;
 
+    @Getter
     private Charset enc2;
 
     public TextAssertionLogic(Parameters params) throws AssertionError {
         super(params);
         enc1 = createCharset(params, 1);
         enc2 = createCharset(params, 2);
-        logger.info("期待値    encode: " + enc1.displayName());
-        logger.info("検証データ encode: " + enc2.displayName());
+        log.info("期待値    encode: " + enc1.displayName());
+        log.info("検証データ encode: " + enc2.displayName());
     }
 
     private Charset createCharset(Parameters params, int index) {
@@ -80,7 +84,7 @@ public class TextAssertionLogic extends DefaultAssertionLogic {
         if (eSeparator != null && aSeparator != null) {
             assertThat("改行コードの比較エラー", aSeparator, is(eSeparator));
         }
-        logger.debug("改行コードは{}です", aSeparator);
+        log.debug("改行コードは{}です", aSeparator);
 
         List<String> expectedLines = readText(expected, enc1);
         List<String> actualLines = readText(actual, enc2);
@@ -165,7 +169,7 @@ public class TextAssertionLogic extends DefaultAssertionLogic {
         return null;
     }
 
-    private List<String> readText(Path path, Charset enc) {
+    public List<String> readText(Path path, Charset enc) {
         List<String> lines = null;
         try {
             lines = Files.readAllLines(path, enc);
