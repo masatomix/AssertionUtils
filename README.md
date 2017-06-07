@@ -13,8 +13,8 @@ java -jar AssertionUtils.jar  -i data\shin -o data\gen -logic nu.mine.kino.asser
 excludeColumns.properties
 というファイルを置いてください。
 
-xxx.tsv=0,1,2
-yyy.tsv = 2,4
+xxx.tsv=0,1,2  
+yyy.tsv = 2,4  
 
 など除外カラム番号(0始まり)で指定すると、そのカラムは除外して比較。
 また、それぞれのディレクトリに xxx.tsv_modified などというファイルも出力します。
