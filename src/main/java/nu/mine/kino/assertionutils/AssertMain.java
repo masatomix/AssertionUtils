@@ -12,13 +12,27 @@
 
 package nu.mine.kino.assertionutils;
 
-import static nu.mine.kino.assertionutils.AssertUtils.*;
+import static nu.mine.kino.assertionutils.AssertUtils.assertEqualsDirWithoutException;
+import static nu.mine.kino.assertionutils.AssertUtils.assertEqualsFileWithoutException;
+import static nu.mine.kino.assertionutils.AssertUtils.assertExists;
+import static nu.mine.kino.assertionutils.AssertUtils.assertFileExists;
+import static nu.mine.kino.assertionutils.AssertUtils.isDirectory;
+
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ResourceBundle;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.util.StatusPrinter;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 /**
  * @author Masatomi KINO
@@ -28,25 +42,61 @@ import lombok.extern.slf4j.Slf4j;
 public class AssertMain {
 
     public static void main(String[] args) {
-
         // print internal state
-        // LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-        // StatusPrinter.print(lc);
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        StatusPrinter.print(lc);
 
-        // try (ConfigurableApplicationContext context = new
-        // ClassPathXmlApplicationContext(
-        // "applicationContext.xml")) {
         AssertMain main = new AssertMain();
-        // AssertMain main = context.getBean(AssertMain.class);
         CmdLineParser parser = new CmdLineParser(main);
+        // 前処理。コマンドライン引数のチェック
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             printUsage(parser);
             return;
         }
-        main.execute();
-        // }
+
+        try {
+            main.init();
+            main.execute();
+        } finally {
+            CacheManager manager = CacheManager.getInstance();
+            manager.shutdown();
+        }
+    }
+
+    private void init() {
+        CacheManager manager = CacheManager.getInstance();
+        String cacheName = "settingsCache";
+        manager.addCache(cacheName);
+
+        Cache settingsCache = manager.getCache(cacheName);
+        String propertyFile = "assertUtils";
+        ResourceBundle bundle = null;
+        try {
+            bundle = ResourceBundle.getBundle(propertyFile);
+            doSettings(settingsCache, bundle);
+        } catch (java.util.MissingResourceException e) {
+            String message = "設定ファイルが存在しません。必要ならクラスパス上に {}.propertiesを配置してください。({})";
+            doSettings(settingsCache, ResourceBundle
+                    .getBundle("nu.mine.kino.assertionutils.DefaultResources"));
+            log.warn(message, propertyFile, e.getMessage());
+        }
+
+        List<String> keys = settingsCache.getKeys();
+        for (String key : keys) {
+            Element element = settingsCache.get(key);
+            log.debug("key[{}]:{}", element.getObjectKey(),
+                    element.getObjectValue());
+        }
+    }
+
+    private void doSettings(Cache settingsCache, ResourceBundle bundle) {
+        Enumeration<String> keys = bundle.getKeys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            settingsCache.put(new Element(key, bundle.getString(key)));
+        }
     }
 
     private static void printUsage(CmdLineParser parser) {
@@ -74,13 +124,7 @@ public class AssertMain {
         System.out.println(
                 " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.CSVAssertionLogic MS932");
         System.out.println("　※ -logic を記載する場合は、最後に書くようにしてください。");
-        // System.out.println();
-        // parser.printUsage(System.out);
 
-        // -i
-        // /Users/masatomix/Documents/workspace_new/etfsmaBatchJava2/expected
-        // -o /Users/masatomix/Desktop/actual -exclude d018.txt
-        // -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932
     }
 
     @Option(name = "-i", metaVar = "期待値ディレクトリ", required = true, usage = "input file")

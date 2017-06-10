@@ -35,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
 
 /**
  * 基本的には{@link TextAssertionLogic}と同様の比較を行うが、各行を、タブでデリミタした可変長ファイルと見なし、
@@ -131,12 +133,14 @@ public class CSVAssertionLogic3 extends TextAssertionLogic {
         }
 
         // ファイル出力。
-        String newName = path.toFile().getName() + "_modified";
+        String newName = path.toFile().getName() + AssertUtils.getModifiedExt();
         String parentPath = path.getParent().toFile().getAbsolutePath();
         writeFile(Paths.get(parentPath, newName), retLines, enc);
         return retLines;
 
     }
+
+
 
     /**
      * 指定したファイルを出力
