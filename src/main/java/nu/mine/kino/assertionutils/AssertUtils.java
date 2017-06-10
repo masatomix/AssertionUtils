@@ -390,7 +390,7 @@ public class AssertUtils {
     public static String getModifiedExt() {
         Cache settingsCache = CacheManager.getInstance()
                 .getCache("settingsCache");
-        Element element = settingsCache.get("modified_ext");
+        Element element = settingsCache.get("modified_file_ext");
         // log.debug("{}", element.getObjectValue());
         return (String) element.getObjectValue();
         // return "_modified";
