@@ -22,12 +22,16 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
 
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 /**
  *
@@ -74,7 +78,7 @@ public class AssertUtils {
                 }
 
                 // '_modifiedでおわるファイルは除外'
-                if (actualFile.toFile().getName().endsWith("_modified")) {
+                if (actualFile.toFile().getName().endsWith(getModifiedExt())) {
                     return FileVisitResult.CONTINUE;
                 }
 
@@ -382,4 +386,14 @@ public class AssertUtils {
     public static boolean isFile(String path) {
         return isFile(Paths.get(path));
     }
+
+    public static String getModifiedExt() {
+        Cache settingsCache = CacheManager.getInstance()
+                .getCache("settingsCache");
+        Element element = settingsCache.get("modified_ext");
+        // log.debug("{}", element.getObjectValue());
+        return (String) element.getObjectValue();
+        // return "_modified";
+    }
+
 }

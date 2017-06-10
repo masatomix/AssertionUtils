@@ -61,6 +61,12 @@
 			<artifactId>slf4j-simple</artifactId>
 			<version>1.7.18</version>
 		</dependency>
+	<dependency>
+		<groupId>net.sf.ehcache</groupId>
+		<artifactId>ehcache</artifactId>
+		<version>2.10.4</version>
+	</dependency>
+
 <!-- 使用している?いなければいつか削除
 http://d.hatena.ne.jp/Kazuhira/20150408/1428503151
 		<dependency>
@@ -107,7 +113,7 @@ http://d.hatena.ne.jp/Kazuhira/20150408/1428503151
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
-				<configuration><!--  要対応 -->
+				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
 					<encoding>UTF-8</encoding>
