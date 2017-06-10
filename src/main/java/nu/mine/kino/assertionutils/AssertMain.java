@@ -52,6 +52,7 @@ public class AssertMain {
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
+            log.error("{}", e.getMessage());
             printUsage(parser);
             return;
         }
@@ -103,6 +104,7 @@ public class AssertMain {
         System.out.println("usage:");
         parser.printSingleLineUsage(System.out);
         System.out.println();
+        System.out.println();
         System.out.println("対象ファイル名は -include xx を繰り返し指定することで複数ファイルを指定可能");
         System.out.println("除外ファイル名は -exclude xx を繰り返し指定することで複数ファイルを指定可能");
         System.out.println(
@@ -115,14 +117,14 @@ public class AssertMain {
         System.out.println();
         System.out.println("テキスト比較する場合(期待値・検証値ファイルともMS932で読み込む)");
         System.out.println(
-                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.TextAssertionLogic MS932");
+                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic Text MS932");
 
         System.out.println("　※ -logic を記載する場合は、最後に書くようにしてください。");
         System.out.println();
         System.out.println(
                 "CSV比較する場合(暫定処理として、半角スペースをデリミタとして分割して、先頭2列は除去してCSV項目比較)");
         System.out.println(
-                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic nu.mine.kino.assertionutils.CSVAssertionLogic MS932");
+                " 例: java -jar AssertionUtils-0.0.x-SNAPSHOT-jar-with-dependencies.jar -i /home/userA -o /home/userB -logic CSV MS932");
         System.out.println("　※ -logic を記載する場合は、最後に書くようにしてください。");
 
     }
@@ -133,7 +135,7 @@ public class AssertMain {
     @Option(name = "-o", metaVar = "検証データディレクトリ", required = true, usage = "output file")
     private static String output;
 
-    @Option(name = "-logic", metaVar = "検証ロジッククラス", handler = LogicHandler.class)
+    @Option(name = "-logic", metaVar = "検証ロジック名", handler = LogicHandler.class)
     private static Logic logic = new DefaultAssertionLogic(null);
 
     @Option(name = "-exclude", metaVar = "除外ファイル名", required = false, usage = "*.logなど除外ファイルを指定")
