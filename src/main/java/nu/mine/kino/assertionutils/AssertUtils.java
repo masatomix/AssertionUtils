@@ -53,7 +53,8 @@ public class AssertUtils {
         final Path expectedPath = Paths.get(expectedDir);
         final Path actualDirPath = Paths.get(actualDir);
 
-        final PathMatcher[] includeMatchers = createPathMatcher(includePatterns);
+        final PathMatcher[] includeMatchers = createPathMatcher(
+                includePatterns);
         final PathMatcher[] matchers = createPathMatcher(excludePatterns);
 
         FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
@@ -262,51 +263,122 @@ public class AssertUtils {
     }
 
     ///////// 以下、便利Utils
+
+    /**
+     * 指定したパスがディレクトリであることをチェックします。ファイルの場合は{@link AssertionError}をスローします。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき、pathがファイルのとき。
+     */
     public static void assertIsDir(String dir) {
         assertIsDir(Paths.get(dir));
     }
 
+    /**
+     * 指定したパスがディレクトリであることをチェックします。ファイルの場合は{@link AssertionError}をスローします。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき、pathがファイルのとき。
+     */
     public static void assertIsDir(Path dir) {
         assertExists(dir);
         if (!Files.isDirectory(dir)) {
-            Assert.fail(dir + " はディレクトリです。ファイルを指定してください。");
+            Assert.fail(dir + " はファイルなのでfailしました。ディレクトリを指定してください。");
         }
     }
 
+    /**
+     * 指定したパスがファイルであることをチェックします。ディレクトリの場合は{@link AssertionError}をスローします。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき、pathがディレクトリのとき。
+     */
     public static void assertIsFile(String path) {
         assertIsFile(Paths.get(path));
     }
 
+    /**
+     * 指定したパスがファイルであることをチェックします。ディレクトリの場合は{@link AssertionError}をスローします。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき、pathがディレクトリのとき。
+     */
     public static void assertIsFile(Path path) {
         assertExists(path);
         if (Files.isDirectory(path)) {
-            Assert.fail(path + " はディレクトリです。ファイルを指定してください。");
+            Assert.fail(path + " はディレクトリなのでfailしました。ファイルを指定してください。");
         }
     }
 
+    /**
+     * 指定したパスが存在しない場合は、{@link AssertionError}をスローします。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき
+     */
     public static void assertExists(String path) {
         assertExists(Paths.get(path));
     }
 
+    /**
+     * 指定したパスが存在しない場合は、{@link AssertionError}をスローします。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき
+     */
     public static void assertExists(Path path) {
         if (!Files.exists(path)) {
             Assert.fail(path + " が存在しません。");
         }
     }
 
+    /**
+     * 指定したパスがディレクトリかどうかを返します。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき
+     */
     public static boolean isDirectory(Path path) {
         assertExists(path);
         return Files.isDirectory(path);
     }
 
+    /**
+     * 指定したパスがファイルかどうかを返します。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき
+     */
     public static boolean isFile(Path path) {
         return !isDirectory(path);
     }
 
+    /**
+     * 指定したパスがディレクトリかどうかを返します。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき
+     */
     public static boolean isDirectory(String path) {
         return isDirectory(Paths.get(path));
     }
 
+    /**
+     * 指定したパスがファイルかどうかを返します。
+     * 
+     * @param path
+     * @throws AssertionError
+     *             pathが存在しないとき
+     */
     public static boolean isFile(String path) {
         return isFile(Paths.get(path));
     }
