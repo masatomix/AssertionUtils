@@ -12,7 +12,7 @@ http://www.slideshare.net/miyakawataku/concepts-and-tools-of-logging-in-java
     </encoder>
   </appender>
 
-  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+  <appender name="STACK_TRACE" class="ch.qos.logback.core.FileAppender">
     <file>error.log</file>
     <encoder>
       <charset>UTF-8</charset>
@@ -20,9 +20,23 @@ http://www.slideshare.net/miyakawataku/concepts-and-tools-of-logging-in-java
     </encoder>
   </appender>
 
+
+  <appender name="DETAIL" class="ch.qos.logback.core.FileAppender">
+    <file>error.log</file>
+    <encoder>
+      <charset>UTF-8</charset>
+      <pattern>[%-5level]	%c{0}	%date{yyyy/MM/dd HH:mm:ss.SSS}	%msg%n</pattern>
+    </encoder>
+  </appender>
+
+
+
   <logger name="nu.mine.kino.assertionutils" level="INFO" />
   <logger name="forStackTrace" level="ERROR" additivity="false">
-  	<appender-ref ref="FILE" />
+  	<appender-ref ref="STACK_TRACE" />
+  </logger>
+  <logger name="detailMessage" level="WARN" additivity="false">
+  	<appender-ref ref="DETAIL" />
   </logger>
   <logger name="org" level="INFO" />
   <logger name="net" level="INFO" />

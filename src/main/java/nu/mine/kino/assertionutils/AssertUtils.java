@@ -43,6 +43,9 @@ public class AssertUtils {
     private static final Logger slogger = LoggerFactory
             .getLogger("forStackTrace");
 
+    private static final Logger dlogger = LoggerFactory
+            .getLogger("detailMessage");
+
     // List<String> allLines = Files.readAllLines(path,
     // Charset.forName("UTF-8"));
     // めも
@@ -165,8 +168,8 @@ public class AssertUtils {
             log.info("このファイルは期待値通りでした: " + actual);
         } catch (AssertionError e) {
             log.error("このファイルの検証処理でエラーになりました: {}", actual);
-            slogger.error("このファイルの検証処理でエラーになりました: {}", actual);
-            slogger.error("{}", e.getMessage());
+            dlogger.error("このファイルの検証処理でエラーになりました: {}", actual);
+            dlogger.error("{}", e.getMessage());
         }
     }
 
