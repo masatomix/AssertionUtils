@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>nu.mine.kino</groupId>
 	<artifactId>AssertionUtils</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1-SNAPSHOT</version>
 
 	<issueManagement>
 		<url>https://github.com/masatomix/AssertionUtils/issues</url>
@@ -21,7 +21,7 @@
 		<url>https://github.com/masatomix/AssertionUtils</url>
 		<connection>scm:git:https://github.com/masatomix/AssertionUtils.git</connection>
 		<developerConnection>scm:git:git@github.com:masatomix/AssertionUtils.git</developerConnection>
-	  <tag>AssertionUtils-0.1.0</tag>
+	  <tag>HEAD</tag>
   </scm>
 	<developers>
 		<developer>
