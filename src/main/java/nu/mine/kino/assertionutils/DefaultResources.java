@@ -23,6 +23,7 @@ public class DefaultResources extends ListResourceBundle {
     @Override
     protected Object[][] getContents() {
         return new Object[][] { { "modified_file_ext", "_modified" },
+                { "modified_file_export", "true" },
                 { "lastLineCheck", "true" } };
     }
 
