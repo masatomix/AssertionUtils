@@ -51,14 +51,15 @@ public class LogicHandler extends OptionHandler<Logic> {
 
     private Logic parse(Parameters params) throws CmdLineException {
         String className = params.getParameter(0);
-        log.debug("className: " + className);
+        log.debug("logicName: " + className);
         print(params);
 
         try {
             // if (!StringUtils.isEmpty(encoding)) {
             // Logic newInstance = Logic.class.getConstructor(String.class)
             // .newInstance(encoding);
-            Class<? extends Logic> clazz = Class.forName(className)
+            String fqcn = createClassName(className);
+            Class<? extends Logic> clazz = Class.forName(fqcn)
                     .asSubclass(Logic.class);
             Logic newInstance = clazz.getConstructor(Parameters.class)
                     .newInstance(params);
@@ -95,6 +96,13 @@ public class LogicHandler extends OptionHandler<Logic> {
             throw new CmdLineException(owner, e);
         }
 
+    }
+
+    private String createClassName(String className) {
+        StringBuffer ret = new StringBuffer("nu.mine.kino.assertionutils.");
+        ret.append(className);
+        ret.append("AssertionLogic");
+        return new String(ret);
     }
 
     private void print(Parameters params) throws CmdLineException {

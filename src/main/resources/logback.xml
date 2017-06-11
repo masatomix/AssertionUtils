@@ -25,6 +25,7 @@ http://www.slideshare.net/miyakawataku/concepts-and-tools-of-logging-in-java
   	<appender-ref ref="FILE" />
   </logger>
   <logger name="org" level="INFO" />
+  <logger name="net" level="INFO" />
 
   <root>
     <appender-ref ref="STDOUT" />

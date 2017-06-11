@@ -22,7 +22,6 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.List;
 
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -165,7 +164,9 @@ public class AssertUtils {
             assertEqualsFile(expected, actual, logic);
             log.info("このファイルは期待値通りでした: " + actual);
         } catch (AssertionError e) {
-            log.error("このファイルの検証処理でエラーになりました: {},({})", actual, e.getMessage());
+            log.error("このファイルの検証処理でエラーになりました: {}", actual);
+            slogger.error("このファイルの検証処理でエラーになりました: {}", actual);
+            slogger.error("{}", e.getMessage());
         }
     }
 
@@ -388,12 +389,14 @@ public class AssertUtils {
     }
 
     public static String getModifiedExt() {
+        return getSettingData("modified_file_ext");
+    }
+
+    public static String getSettingData(String key) {
         Cache settingsCache = CacheManager.getInstance()
                 .getCache("settingsCache");
-        Element element = settingsCache.get("modified_file_ext");
-        // log.debug("{}", element.getObjectValue());
+        Element element = settingsCache.get(key);
         return (String) element.getObjectValue();
-        // return "_modified";
     }
 
 }
